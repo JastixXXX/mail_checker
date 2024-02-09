@@ -26,7 +26,11 @@
 import subprocess
 import argparse
 import logging
-import user_settings
+from user_settings import (
+    GOOGLE_LOGIN, COLORS, EMAIL_IS_FRESH, 
+    EMAILS_NOTIFY, EXPECTED_MESSAGES, 
+    MAILRU_LOGIN, TZ
+)
 from os import path
 from imapclient import IMAPClient
 from imaplib import IMAP4
