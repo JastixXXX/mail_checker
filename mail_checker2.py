@@ -1261,10 +1261,10 @@ if __name__ == '__main__':
         datefmt='%Y-%m-%d %H:%M:%S',
         style='{'
     )
-    handler = logging.StreamHandler()
-    # # write log to the script dir
-    # script_dir = path.dirname(path.realpath(__file__))
-    # handler = logging.FileHandler(filename=path.join(script_dir, 'log.txt'))
+    # handler = logging.StreamHandler()
+    # write log to the script dir
+    script_dir = path.dirname(path.realpath(__file__))
+    handler = logging.FileHandler(filename=path.join(script_dir, 'log.txt'))
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.debug('Start main')
