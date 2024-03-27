@@ -398,15 +398,29 @@ class WorkWithGmail(WorkWithMailBase):
         requests a new one and restarts the idle via setting
         the stop_event
         """
-        # requires self.creds to be sure, we already had asuccessful
+        # requires self.creds to be sure, we already had a successful
         # login and self.stop_event to be sure idle is used. Otherwise
         # it makes no sense to continue
         if self.creds is None or self.stop_event is None:
             return
         if (creds := Credentials.from_authorized_user_file(self.token_file)).expired:
             logger.debug(f'{self.ident} requires token update. Setting the stop event')
-            creds.refresh(Request())
-            self.stop_event.set()
+            try:
+                creds.refresh(Request())
+                with open(self.token_file, 'w') as token:
+                    logger.debug(f'Saving new access token {self.token_file}')
+                    token.write(creds.to_json())               
+            # if any error occured during requesting new access token
+            # according to docs it will be this type.
+            except TransportError:
+                logger.error('No network', exc_info=True)
+                creds = None
+            # all other are critical too
+            except Exception:
+                logger.error('An error occured during a Refresh() request', exc_info=True)
+                creds = None
+            finally:
+                self.stop_event.set()
 
     def _map_label_ids_to_names(self) -> None:
         """User created labels have just IDs in message request
